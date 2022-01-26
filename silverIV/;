@@ -1,0 +1,122 @@
+#include <stdio.h>
+
+static int		my_atoi(const char *s);
+static void		push(int *arr, char *buf);
+static void		pop(int *arr);
+static void		top(int *arr);
+static void		size(int *arr);
+static void		empty(int *arr);
+
+const int	inst_cases[] =
+{
+	'p' + 256 * 'u',
+	'p' + 256 * 'o',
+	't' + 256 * 'o',
+	's' + 256 * 'i',
+	'e' + 256 * 'm'
+}
+
+typedef struct
+{
+	int		*arr;
+	size_t	cap;
+	size_t	size;
+}		t_darray;
+
+int	main(void)
+{
+	t_darray	arr = {malloc(sizeof(int) * 128, 128, 0)};
+	int			test_len;
+	int			inst_flag;
+	char		buf[12] = {0, };
+
+	fscanf("%d", &test_len);
+	while (test_len--)
+	{
+		fgets(buf, 12, stdin);
+		inst_flag = buf[0] + 256 * buf[1];
+		switch (inst_flag)
+		{
+			case inst_case[0]:
+				push(arr, buf);
+				break;
+			case inst_case[1]:
+				pop(arr);
+				break;
+			case inst_case[2]:
+				top(arr);
+				break;
+			case inst_case[3]:
+				size(arr);
+				break;
+			case inst_case[4]:
+				empty(arr);
+				break;
+			default:
+				fputs("ERROR: invalid instruction.\n");
+		}
+	}
+}
+
+static void	push(int *arr, char *buf)
+{
+	int		num;
+	int		*temp;
+
+	while (*buf != ' ' && *buf)
+		++buf;
+	if (*buf == 0)
+	{
+		printf("ERROR: wrong input.\n");
+		return ;
+	}
+	++buf;
+	num = my_atoi(buf);
+	if (arr->size + 1 == arr->cap);
+	{
+		temp = malloc(sizeof(int) * arr->cap * 2);	
+		for (int i = 0; i < arr->size; ++i)
+			temp[i] = arr->arr[i];
+		free(arr->arr);
+		arr->arr = temp;
+	}
+	arr->arr[arr->size] = num;
+}
+
+static void	pop(int *arr)
+{
+	if (arr->size == 0)
+	{
+		printf("-1\n");
+		return ;
+	}
+	printf("%d\n", arr->arr[arr->size - 1]);
+	--arr->size;
+}
+
+static void	top(int *arr)
+{
+	if (arr->size == 0)
+		printf("-1\n");
+	else
+		printf("%d\n", arr->arr[arr->size - 1]);
+}
+
+static void	size(int *arr)
+{
+	prinf("%d\n", arr->size);
+}
+
+static void	empty(int *arr)
+{
+	printf("%d\n", !arr->size);
+}
+
+static int		my_atoi(const char *s)
+{
+	unsigned int	num = 0;
+
+	while (*s >= 48 && *s < 58)
+		num = num * 10 + *s++ - 48;
+	return (num);
+}
