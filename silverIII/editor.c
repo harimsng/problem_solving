@@ -1,8 +1,4 @@
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-#define DEBUG(M, ...) printf("%s:%s:%d DEBUG: " M "\n",\
+#define DEBUG(M, ...) fprintf(stdout, "%s:%s:%d DEBUG: " M "\n",\
 		__FILE__, __func__, __LINE__, ##__VA_ARGS__)
 
 #define MAX_STR_SIZE (600002)
@@ -42,10 +38,16 @@ int	main(void)
 	size_t		idx = 0;
 
 	read(0, buf, BUF_SIZE - 1);
+	DEBUG("read: %s", buf);
 	string_to_list(&inst_ptr, &str_list);
+	DEBUG("string_to_list: %c", str_list.head->letter);
 	inst_len = my_atoi(&inst_ptr);
+	while (!(*inst_ptr >= 65 && *inst_ptr <= 90))
+	    ++inst_ptr;
+	DEBUG("my_itoa: %zu, string: %s", inst_len, inst_ptr);
 	while (idx < inst_len)
 	{
+	    DEBUG("%zuth loop, instruction: %s", idx, inst_ptr);
 		switch (*inst_ptr)
 		{
 			case 'P':
@@ -77,8 +79,8 @@ int	my_atoi(char **p)
 
 	while (*s >= 48 && *s < 58)
 		num = num * 10 + *s++ - 48;
-	*p = s + 1;
-	return (num);
+    *p = s + 1;
+    return (num);
 }
 
 void	string_to_list(char **ptr, t_dll *str_list)
@@ -110,6 +112,7 @@ void	string_to_list(char **ptr, t_dll *str_list)
 	str_list->tail = malloc(sizeof(t_node));
 	node->next = str_list->tail;
 	*(str_list->tail) = (t_node){NULL, node, 0};
+	*ptr = s + 1;
 }
 
 void	push_at(char **inst_ptr, t_dll *str_list)
@@ -126,7 +129,7 @@ void	push_at(char **inst_ptr, t_dll *str_list)
 		if (str_list->cur_node != NULL)
 			node->prev = str_list->cur_node->prev;
 		else
-			node->prev = str_list
+			node->prev = str_list->cur_node;
 		str_list->cur_node->prev->next = node;
 	}
 	else
@@ -135,25 +138,25 @@ void	push_at(char **inst_ptr, t_dll *str_list)
 	str_list->cur_node = node;
 	++str_list->size;
 
-	node->letter = (*inst_ptr)[3];
+	node->letter = (*inst_ptr)[2];
 	*inst_ptr += 4;
 }
 
-void	move_left(char **inst_ptr, t_dll *str_list);
+void	move_left(char **inst_ptr, t_dll *str_list)
 {
 	*inst_ptr += 2;
 	if (str_list->cur_node != str_list->head)
 		str_list->cur_node = str_list->cur_node->prev;
 }
 
-void	move_right(char **inst_ptr, t_dll *str_list);
+void	move_right(char **inst_ptr, t_dll *str_list)
 {
 	*inst_ptr += 2;
 	if (str_list->cur_node != str_list->tail)
 		str_list->cur_node = str_list->cur_node->next;
 }
 
-void	delete_letter(char **inst_ptr, t_dll *str_list);
+void	delete_letter(char **inst_ptr, t_dll *str_list)
 {
 	t_node	*node;
 
@@ -165,4 +168,16 @@ void	delete_letter(char **inst_ptr, t_dll *str_list);
 	node->prev->next = node->next;
 	node->next->prev = node->prev;
 	free(node);
+}
+
+void    print_list(t_dll *str_list)
+{
+    size_t  len = str_list->size;
+    t_node  *node = str_list->head;
+    
+    while (len--)
+    {
+        write(1, &node->letter, 1);
+        node = node->next;
+    }
 }
