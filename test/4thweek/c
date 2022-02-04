@@ -1,10 +1,7 @@
-#include <unistd.h>
+#include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_STR_SIZE (100001)
-#define MAX_INST (500000 * 4 + 1)
-#define INST_DIGIT (7)
-#define BUF_SIZE (MAX_STR_SIZE + INST_DIGIT + MAX_INST)
+#define BUF_SIZE (100002)
 
 typedef struct s_node
 {
@@ -21,8 +18,7 @@ typedef struct
 	size_t	size;
 }			t_dll;
 
-static int	my_atoi(char **inst_ptr);
-static void	string_to_list(char **p, t_dll *str_list);
+static void	string_to_list(char *s, t_dll *str_list);
 static void	print_list(t_dll *str_list);
 
 static void	push_at(char **inst_ptr, t_dll *str_list);
@@ -34,13 +30,17 @@ int	main(void)
 {
 	t_dll		str_list = {NULL, NULL, NULL, 0};
 	char		buf[BUF_SIZE] = {0, };
-	char		*inst_ptr = buf;
+	char		*inst;
+	char		*inst_ptr;
 	size_t		inst_len;
 	size_t		idx = 0;
 
-	read(0, buf, BUF_SIZE - 1);
-	string_to_list(&inst_ptr, &str_list);
-	inst_len = my_atoi(&inst_ptr);
+	fgets(buf, BUF_SIZE, stdin);
+	string_to_list(buf, &str_list);
+	fscanf(stdin, "%zu\n", &inst_len);
+	inst = malloc(4 * inst_len + 1);
+	fscanf(stdin, "%[^\0]", inst);
+	inst_ptr = inst;
 	while (idx < inst_len)
 	{
 		switch (*inst_ptr)
@@ -58,29 +58,18 @@ int	main(void)
 				delete_letter(&inst_ptr, &str_list);
 				break;
 			default:
-				write(2, "wrong instruction.\n", 19);
+				fprintf(stdout, "wrong instruction.\n");
 				break;
 		}
 		++idx;
 	}
 	print_list(&str_list);
+	free(inst);
 	return (0);
 }
 
-int	my_atoi(char **p)
+void	string_to_list(char *s, t_dll *str_list)
 {
-	char	*s = *p;
-	int		num = 0;
-
-	while (*s >= 48 && *s < 58)
-		num = num * 10 + *s++ - 48;
-    *p = s + 1;
-    return (num);
-}
-
-void	string_to_list(char **ptr, t_dll *str_list)
-{
-	char	*s = *ptr;
 	t_node	*node;
 	size_t	size = 1;
 
@@ -111,7 +100,6 @@ void	string_to_list(char **ptr, t_dll *str_list)
 	str_list->cur_node = str_list->tail;
 	*(str_list->tail) = (t_node){NULL, node, 0};
 	str_list->size = size;
-	*ptr = s + 1;
 }
 
 void	push_at(char **inst_ptr, t_dll *str_list)
@@ -178,7 +166,7 @@ void	delete_letter(char **inst_ptr, t_dll *str_list)
 
 void    print_list(t_dll *str_list)
 {
-	char	*buf = malloc(str_list->size);
+	char	*buf = malloc(str_list->size + 1);
 	size_t	len = str_list->size;
 	size_t	idx = 0;
     t_node  *node = str_list->head;
@@ -190,7 +178,8 @@ void    print_list(t_dll *str_list)
 		free(node->prev);
 		++idx;
     }
-	write(1, buf, len);
+	buf[idx] = 0;
+	fputs(buf, stdout);
 	free(buf);
 	free(node);
 }

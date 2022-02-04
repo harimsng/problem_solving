@@ -1,10 +1,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#define MAX_STR_SIZE (100001)
-#define MAX_INST (500000 * 4 + 1)
+#define MAX_STR_SIZE (600002)
 #define INST_DIGIT (7)
-#define BUF_SIZE (MAX_STR_SIZE + INST_DIGIT + MAX_INST)
+#define BUF_SIZE (MAX_STR_SIZE + INST_DIGIT)
 
 typedef struct s_node
 {
@@ -187,10 +186,8 @@ void    print_list(t_dll *str_list)
     {
 		buf[idx] = node->letter;
         node = node->next;
-		free(node->prev);
 		++idx;
     }
 	write(1, buf, len);
 	free(buf);
-	free(node);
 }
