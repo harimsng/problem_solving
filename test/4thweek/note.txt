@@ -8,3 +8,5 @@ char array str doesn't include '\n' in given format.
 
 frequent use of IO functions lowers performance of program.
 then what is worse along input and output?
+
+try different IDEs and OSs.
