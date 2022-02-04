@@ -45,7 +45,7 @@ int	main(void)
 	fscanf(stdin, " %zu ", &inst_len);
 	inst_buf = malloc(4 * inst_len);
 	inst_ptr = inst_buf;
-	fscanf(stdin, "%[^EOF]", inst_buf);
+	fread(inst_buf, 1, 4 * inst_len, stdin);
 	while (idx < inst_len)
 	{
 		switch (*inst_ptr)
@@ -171,7 +171,7 @@ static void		print_list(t_dll *list)
 		++idx;
 	}
 	buf[idx] = 0;
-	fprintf(stdout, "%s", buf);
+	fwrite(buf, 1, idx, stdout);
 	free(list->tail);
 	free(buf);
 }

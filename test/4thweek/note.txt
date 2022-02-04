@@ -1,0 +1,10 @@
+EOF appears at the end of input.
+existence of NULL character at front of EOF is not guaranteed.
+
+EOF is just a indicator so it can't be printed out.
+
+scanf("%[^\n]", str)
+char array str doesn't include '\n' in given format.
+
+frequent use of IO functions lowers performance of program.
+then what is worse along input and output?

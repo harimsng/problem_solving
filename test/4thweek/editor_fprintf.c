@@ -40,7 +40,7 @@ int	main(void)
 	char	*inst_ptr;
 	size_t	idx = 0, inst_len;
 
-	fgets(buf, INIT_MAX + 1, stdin);
+	fscanf(stdin, "%s", buf);
 	string_to_list(&list, buf);
 	fscanf(stdin, " %zu ", &inst_len);
 	inst_buf = malloc(4 * inst_len);
@@ -84,7 +84,7 @@ static void		string_to_list(t_dll *list, char *str)
 	list->head = malloc(sizeof(t_node));
 	*list->head = (t_node){NULL, NULL, str[idx++]};
 	node = list->head;
-	while (str[idx] != '\n')
+	while (str[idx] != 0)
 	{
 		node->next = malloc(sizeof(t_node));
 		node->next->prev = node;
