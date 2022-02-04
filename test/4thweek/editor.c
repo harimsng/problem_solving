@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define INIT_MAX (100010)
+#define INIT_MAX (100002)
 
 #ifdef DFLAG
-# define	DEBUG(M, ...) fprintf(stderr, "%s:%s:%d: " M "\n",\
+# define	DEBUG(M, ...) fprintf(stdout, "%s:%s:%d: " M "\n",\
 		__FILE__, __func__, __LINE__, ##__VA_ARGS__)
 #else
 # define	DEBUG(M, ...)
@@ -26,7 +26,6 @@ typedef struct
 }			t_dll;
 
 static void		string_to_list(t_dll *list, char *str);
-
 static void		move_left(t_dll *list);
 static void		move_right(t_dll *list);
 static void		delete_left(t_dll *list);
@@ -48,33 +47,34 @@ int	main(void)
 	inst_buf = malloc(4 * inst_len + 1);
 	inst_ptr = inst_buf;
 	fscanf(stdin, "%[^\0]", inst_buf);
-	DEBUG("inst_buf = %s", inst_buf);
-	DEBUG("inst_len = %zu", inst_len);
+	//fread(inst_buf, 1, 4 * inst_len + 1, stdin);
+	//fwrite(inst_buf, 1, 4 * inst_len + 1, stdout);
 	while (idx < inst_len)
 	{
-		DEBUG("%zuth loop: %c", idx, *inst_ptr);
+		DEBUG("inst_ptr[0] = %c\n inst_ptr[1] = %c\n inst_ptr[2] = %c", inst_ptr[0],\
+				inst_ptr[1], inst_ptr[2]);
 		switch (*inst_ptr)
 		{
 			case 'L':
 				move_left(&list);
-				inst_ptr += 2;
+				inst_ptr += 3;
 				break;
 			case 'D':
 				move_right(&list);
-				inst_ptr += 2;
+				inst_ptr += 3;
 				break;
 			case 'B':
 				delete_left(&list);
-				inst_ptr += 2;
+				inst_ptr += 3;
 				break;
 			case 'P':
 				push_left(&list, inst_ptr[2]);
-				inst_ptr += 4;
+				inst_ptr += 5;
 				break;
 			default:
+				DEBUG("wrong instruction.");
 				break;
 		}
-		DEBUG("%zuth loop ends", idx);
 		++idx;
 	}
 	print_list(&list);
@@ -95,7 +95,6 @@ static void		string_to_list(t_dll *list, char *str)
 		node->next->prev = node;
 		node = node->next;
 		node->letter = str[idx];
-		DEBUG("transition %zu %c %hhd", idx, str[idx], str[idx]);
 		++idx;
 	}
 	list->tail = malloc(sizeof(t_node));
@@ -114,7 +113,6 @@ static void		move_left(t_dll *list)
 
 static void		move_right(t_dll *list)
 {
-	DEBUG("move_right %c", list->cur->letter);
 	if (list->cur == list->tail)
 		return ;
 	list->cur = list->cur->next;
@@ -147,8 +145,7 @@ static void		push_left(t_dll *list, char letter)
 
 	new_node->letter = letter;
 	++list->size;
-	DEBUG("cur addr: %p", list->cur);
-	DEBUG("head addr: %p", list->head);
+	DEBUG("list->size : %zu", list->size);
 	if (list->cur == list->head)
 	{
 		new_node->prev = NULL;
@@ -172,18 +169,15 @@ static void		print_list(t_dll *list)
 	size_t		size = list->size;
 
 	DEBUG("list size: %zu", size);
-	DEBUG("print starts");
 	while (idx < size)
 	{
-		DEBUG("print %zuth loop", idx);
 		buf[idx] = node->letter;
-		++idx;
-		DEBUG("print %zuth loop mid", idx);
 		node = node->next;
 		free(node->prev);
+		++idx;
 	}
 	buf[idx] = 0;
-	fprintf(stdout, "%s", buf);
+	fprintf(stdout, "%s\n", buf);
+	free(list->tail);
 	free(buf);
-	DEBUG("print ends");
 }
