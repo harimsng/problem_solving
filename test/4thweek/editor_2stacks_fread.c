@@ -45,14 +45,15 @@ int	main(void)
 	fscanf(stdin, "%s", left.stack);
 	left.size = my_strlen(left.stack);
 	fscanf(stdin, " %zu ", &inst_len);
-	fscanf(stdin, "%[^EOF]", inst_buf);
+	fread(inst_buf, 8, 250000, stdin);
+//	fscanf(stdin, "%[^EOF]", inst_buf);
 	while (idx < inst_len)
 	{
 		inst_table[(int)(*g_inst_ptr - 66)]();
 		++idx;
 	}
-	fprintf(stdout, "%s", left.stack);
-	fprintf(stdout, "%s", right.stack + 600000 - right.size);
+	fwrite(left.stack, 1, left.size, stdout);
+	fwrite(right.stack + 600000 - right.size, 1, right.size, stdout);
 	return (0);
 }
 

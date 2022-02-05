@@ -8,11 +8,11 @@ int	main(void)
 //	double		seconds;
 
 	start = clock();
-	execve("editor_fwrite.sh", NULL, NULL);
+	execve("editor_fread.sh", NULL, NULL);
 	end = clock();
 	printf("fwrite: %lfs\n", (double)(end - start) / CLOCKS_PER_SEC);
 	start = clock();
-	execve("editor_fprintf.sh", NULL, NULL);
+	execve("editor_fscanf.sh", NULL, NULL);
 	end = clock();
 	printf("fprintf: %lfs\n", (double)(end - start) / CLOCKS_PER_SEC);
 	return (0);

@@ -45,6 +45,7 @@ int	main(void)
 	fscanf(stdin, "%s", left.stack);
 	left.size = my_strlen(left.stack);
 	fscanf(stdin, " %zu ", &inst_len);
+//	fread(inst_buf, 8, 250000, stdin);
 	fscanf(stdin, "%[^EOF]", inst_buf);
 	while (idx < inst_len)
 	{
