@@ -18,9 +18,7 @@ static char	*g_infixptr;
 
 int	main(void)
 {
-	char	postfix_stack[100] = {0, };
-	char	operator_stack[100] = {0, };
-	char	infix[102] = {0, };
+	char	infix[200] = {0, };
 	size_t	idx = 0;
 
 	g_infixptr = infix;
@@ -30,8 +28,11 @@ int	main(void)
 	if (infix[idx - 1] == '\n')
 		infix[idx - 1] = 0;
 	inside_bracket();
+	write(1, postfix.stack, postfix.height);
 }
 
+// when this recursive functions return, g_infixptr is incremented by one.
+// so infix array should have additional space filled with null characters.
 void	inside_bracket(void)
 {
 	char	temp;
@@ -40,26 +41,28 @@ void	inside_bracket(void)
 	{
 		switch (*g_infixptr)
 		{
-//			case '(':
-//				break;
+			case '(':
+				stack_push(operator, *g_infixptr);
+				++g_infixptr;
+				inside_bracket();
+				continue;
 			case ')':
-				stack_push(postfix, stack_pop(operator));
+				while ((temp = stack_pop(operator)) != '(')
+					stack_push(postfix, temp);
 				return;
 			case '*':
 			case '/':
 				temp = stack_top(operator);
+				if (
 				if (temp == '*' || temp == '/')
 					stack_push(postfix, stack_pop(operator));
-				else if (infix_ptr[1] == '(')
-					inside_bracket(infix_ptr + 2);
 				break;
 			case '+':
 			case '-':
 				temp = stack_top(operator);
-				if (temp == '+' || temp == '-')
+				if (temp == '*' || temp == '/' || temp == '+' || temp == '-')
 					stack_push(postfix, stack_pop(operator));
-				else if (infix_ptr[1] == '(')
-					inside_bracket(infix_ptr + 2);
+				stack_push(operator, *g_infixptr);
 				break;
 			case 'a':
 			case 'b':
@@ -87,6 +90,7 @@ void	inside_bracket(void)
 			case 'x':
 			case 'y':
 			case 'z':
+				stack_push(postfix, *g_infixptr);
 				break;
 			default:
 				fprintf(stderr, "wrong input\n");
@@ -96,6 +100,22 @@ void	inside_bracket(void)
 	}
 }
 
+static void		stack_push(t_stack *stack, char c)
+{
+	stack->stack[stack.height++] = c;
+}
+
+static char		stack_pop(t_stack *stack)
+{
+	return (stack->stack[--stack->height]);
+}
+
+static char		stack_top(t_stack *stack)
+{
+	return (stack->stack[stack->height - 1]);
+}
+
+/*
 1 + ((2 * 3) - 4) * (5 + 6 - 7 * 8 / 9) - 10 * (11 + 12)
 1 + 86 / 9 - 230 .= 10.5 - 230 = -219.5
 a + ((b * c) - d) * (e + f - g * h / i) - j * (k + l)
@@ -103,3 +123,27 @@ abc*d-ef+gh*i/-*+jkl+*-
 abc*d-ef+gh*i/-*+jkl+*-
 abc*d-ef+
 +*-
+
+a * ((b * c) - d) + (e + f - g * h / i) - j * (k + l)
+abc*d-*
++
+
+abc*d-ef+gh*i/-
++*
+
+a + b * c
+
+abc*+
++*
+
+(a + b) * c
+ab+c*
+
+a * b + c
+ab
+*
+
+a * b / c
+ab*
+/
+*/
